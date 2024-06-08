@@ -1,0 +1,16 @@
+# dependencies
+/node_modules
+
+# testing
+
+
+# production
+
+/logs
+npm-debug.log*
+/curl
+# misc
+.DS_Store
+
+# my-files
+commits.md
