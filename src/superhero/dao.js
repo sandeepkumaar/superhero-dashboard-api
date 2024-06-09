@@ -27,21 +27,36 @@ export const find = async function (
   return cursor.toArray();
 };
 
+const mapper = new Map([
+  ["publisher", "biography.publisher"],
+  ["alignment", "biography.alignment"],
+  ["gender", "appearance.gender"],
+  ["race", "appearance.race"],
+]);
 export const aggregate = async function (group, opts) {
+  let groupField = mapper.has(group) ? mapper.get(group) : group;
+
   let _collection = await collection;
   let query = [
     {
       $group: {
-        _id: { publisher: "$biography.publisher" },
-        count: { $sum: 1 },
+        _id: {
+          [group]: `$${groupField}`,
+        },
+        count: {
+          $sum: 1,
+        },
       },
     },
     {
       $project: {
         _id: 0,
         count: 1,
-        publisher: "$_id.publisher",
+        [group]: `$_id.${group}`,
       },
+    },
+    {
+      $sort: { count: -1 },
     },
   ];
   log.info({ query, opts, _collection }, "aggregate");

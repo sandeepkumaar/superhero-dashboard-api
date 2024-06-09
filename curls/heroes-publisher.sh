@@ -7,6 +7,8 @@ data=$2
 
 url="http://localhost:8000"
 route="/superheroes/groupby/publisher"
+#route="/superheroes/groupby/gender"
+route="/superheroes/groupby/alignment"
 
 #case $env in 
 #  dev)

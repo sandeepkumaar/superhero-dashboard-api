@@ -20,6 +20,7 @@ router.get("/all", (req, res, next) => {
 router.get("/groupby/:field", (req, res, next) => {
   let { query = {}, params } = req;
   let { field } = params;
+
   return superHeroDao
     .aggregate(field)
     .then((results) => {
