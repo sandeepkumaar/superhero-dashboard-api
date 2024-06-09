@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 const packageJson = JSON.parse(await fs.readFile("package.json", "utf-8"));
 import createLogger from "../logger/index.js";
 import { v4 as uuid } from "uuid";
-import { proxyWithContext } from './async-context.js';
+import { proxyWithContext } from "./async-context.js";
 
 export const logger = createLogger(packageJson.name);
 /**
@@ -30,6 +30,6 @@ export function httpLogMiddleware(req, res, next) {
 
 /**
  * To use log within the request's context
-*/
-const log = proxyWithContext(logger, 'log');
+ */
+const log = proxyWithContext(logger, "log");
 export default log;

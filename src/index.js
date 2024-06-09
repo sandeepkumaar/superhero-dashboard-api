@@ -1,6 +1,6 @@
 import express from "express";
 import bodyParser from "body-parser";
-import cors from 'cors';
+import cors from "cors";
 
 import errorToJson from "@stdlib/error-to-json";
 
@@ -8,11 +8,11 @@ import log, { logger, httpLogMiddleware } from "./logger.js";
 import { contextProvider, proxyWithContext } from "./async-context.js";
 
 // routes
-import superheroRoutes from './superhero/index.js';
+import superheroRoutes from "./superhero/index.js";
 const app = express();
 
 /** only for local-dev*/
-if(process.env.NODE_ENV == 'local-dev') {
+if (process.env.NODE_ENV == "local-dev") {
   app.use(cors());
 }
 app.use(bodyParser.json({ limit: "10mb" }));
@@ -37,7 +37,7 @@ app.get("/version", function (req, res, next) {
   });
 });
 
-app.use('/superheroes', superheroRoutes);
+app.use("/superheroes", superheroRoutes);
 
 /**
  * @type {import('express').ErrorRequestHandler}
