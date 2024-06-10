@@ -33,8 +33,10 @@ const mapper = new Map([
   ["gender", "appearance.gender"],
   ["race", "appearance.race"],
 ]);
-export const aggregate = async function (group, opts) {
+
+export const aggregate = async function (group, filter) {
   let groupField = mapper.has(group) ? mapper.get(group) : group;
+  let { publisher } = filter;
 
   let _collection = await collection;
   let query = [
@@ -59,7 +61,13 @@ export const aggregate = async function (group, opts) {
       $sort: { count: -1 },
     },
   ];
-  log.info({ query, opts, _collection }, "aggregate");
+  if (publisher) {
+    query.unshift({
+      $match: { "biography.publisher": publisher },
+    });
+  }
+  query = query.filter(Boolean);
+  log.info({ query, _collection }, "aggregate");
 
   return _collection.aggregate(query).toArray();
 };

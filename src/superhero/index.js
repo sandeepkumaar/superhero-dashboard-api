@@ -17,12 +17,12 @@ router.get("/all", (req, res, next) => {
     .catch(next);
 });
 
-router.get("/groupby/:field", (req, res, next) => {
-  let { query = {}, params } = req;
+router.post("/groupby/:field", (req, res, next) => {
+  let { query = {}, params, body } = req;
   let { field } = params;
 
   return superHeroDao
-    .aggregate(field)
+    .aggregate(field, body)
     .then((results) => {
       return res.json({
         status: "OK",
