@@ -1,15 +1,25 @@
 import log from "../logger.js";
 import config from "config";
+import { ObjectId } from "mongodb";
 const { mongodb } = config;
-import initConnection from "../mongo/index.js";
+
+import initConnection, { queryBuilder } from "../mongo/index.js";
 
 //
 const { client, getCollection } = initConnection(
   mongodb.connectionString,
   mongodb.name,
 );
-const TABLE_NAME = "superheroes";
-const collection = getCollection(TABLE_NAME);
+const collection = getCollection("superheroes");
+
+const mapField = new Map([
+  ["publisher", "biography.publisher"],
+  ["alignment", "biography.alignment"],
+  ["gender", "appearance.gender"],
+  ["race", "appearance.race"],
+]);
+const mapValue = {};
+let qb = queryBuilder(mapValue, mapField);
 
 export const find = async function (
   query,
@@ -18,7 +28,7 @@ export const find = async function (
   let _collection = await collection;
   log.info({ query, opts, _collection }, "find");
 
-  let cursor = _collection.find(query);
+  let cursor = _collection.find(qb(query));
   for (let [method, arg] of Object.entries(opts)) {
     if (typeof cursor[method] === "function") {
       cursor = cursor[method](arg);
@@ -27,19 +37,18 @@ export const find = async function (
   return cursor.toArray();
 };
 
-const mapper = new Map([
-  ["publisher", "biography.publisher"],
-  ["alignment", "biography.alignment"],
-  ["gender", "appearance.gender"],
-  ["race", "appearance.race"],
-]);
+export const aggregate = async function (group, filter = {}) {
+  let groupField = mapField.has(group) ? mapField.get(group) : group;
 
-export const aggregate = async function (group, filter) {
-  let groupField = mapper.has(group) ? mapper.get(group) : group;
-  let { publisher } = filter;
+  let matchQuery = Object.keys(filter).length
+    ? {
+        $match: qb(filter),
+      }
+    : undefined;
 
   let _collection = await collection;
   let query = [
+    matchQuery,
     {
       $group: {
         _id: {
@@ -61,11 +70,7 @@ export const aggregate = async function (group, filter) {
       $sort: { count: -1 },
     },
   ];
-  if (publisher) {
-    query.unshift({
-      $match: { "biography.publisher": publisher },
-    });
-  }
+
   query = query.filter(Boolean);
   log.info({ query, _collection }, "aggregate");
 

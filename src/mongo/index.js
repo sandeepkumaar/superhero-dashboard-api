@@ -1,5 +1,6 @@
 import { logger as log } from "../logger.js";
 import { MongoClient } from "mongodb";
+import parser from "mongo-parse";
 
 let clients = new Map();
 
@@ -38,3 +39,30 @@ export default function initConnection(url, connString) {
     getCollection,
   };
 }
+
+export const queryBuilder =
+  (mapValue = {}, mapField = new Map()) =>
+  (_query) => {
+    let parserQuery = parser.parse(_query);
+    let query = parserQuery.map(function (field, op) {
+      let entries = Object.entries(op);
+      let [operator, operand] = entries[0];
+      console.log("args", field, operator, operand);
+      if (Array.isArray(operand)) {
+        operator = "$in";
+      }
+      operand = field in mapValue ? mapValue[field](operand) : operand;
+      field = mapField.has(field) ? mapField.get(field) : field;
+
+      return { [field]: { [operator]: operand } };
+    });
+    return query;
+    //if(!formatter) return query;
+
+    //parserQuery = parser.parse(_query);
+    //return parserQuery.mapValues(function(field, value) {
+    //  let fn = formatter[field];
+    //  if(!fn) return value;
+    //  return fn(value);
+    //})
+  };
