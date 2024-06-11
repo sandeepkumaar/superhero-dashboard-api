@@ -4,10 +4,10 @@ import superHeroDao from "./dao.js";
 
 const router = express.Router();
 
-router.get("/all", (req, res, next) => {
-  let { query = {}, params } = req;
+router.post("/search", (req, res, next) => {
+  let { body } = req;
   return superHeroDao
-    .find(query)
+    .find(body)
     .then((results) => {
       return res.json({
         status: "OK",

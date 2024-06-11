@@ -21,15 +21,44 @@ const mapField = new Map([
 const mapValue = {};
 let qb = queryBuilder(mapValue, mapField);
 
-export const find = async function (
-  query,
-  opts = { sort: { _id: -1 }, limit: 100 },
-) {
+const defaultProjections = {
+  _id: 0,
+  id: 1,
+  name: 1,
+  slug: 1,
+  intelligence: "$powerstats.intelligence",
+  strength: "$powerstats.strength",
+  speed: "$powerstats.speed",
+  durability: "$powerstats.durability",
+  power: "$powerstats.power",
+  combat: "$powerstats.combat",
+  gender: "$appearance.gender",
+  race: "$appearance.race",
+  height: "$appearance.height",
+  weight: "$appearance.weight",
+  eyeColor: "$appearance.eyeColor",
+  hairColor: "$appearance.hairColor",
+  publisher: "$biography.publisher",
+  fullName: "$biography.fullName",
+  placeOfBirth: "$biography.placeOfBirth",
+  firstAppearance: "$biography.firstAppearance",
+  image: "$images.md",
+};
+
+export const find = async function (filter, opts = {}) {
+  let { limit = 100, ...restOpts } = opts;
   let _collection = await collection;
+  let query = qb(filter);
+
   log.info({ query, opts, _collection }, "find");
 
-  let cursor = _collection.find(qb(query));
-  for (let [method, arg] of Object.entries(opts)) {
+  let cursor = _collection
+    .find(qb(query), {
+      projection: defaultProjections,
+    })
+    .limit(limit);
+
+  for (let [method, arg] of Object.entries(restOpts)) {
     if (typeof cursor[method] === "function") {
       cursor = cursor[method](arg);
     }
