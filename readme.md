@@ -17,7 +17,7 @@ Requirements: Nodejs, Mongodb server
 ### Setup database
 Ingest Data using `mongoimport`
 ```
-curl https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/all.json
+curl https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/all.json > data.json
 mongoimport --db yourDatabaseName --collection yourCollectionName --file data.json --jsonArray
 ```
 change the mongo config in `./config/local-dev.json`
