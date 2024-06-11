@@ -1,19 +1,26 @@
-## node-express-starter 
-Starter template for Restful apis with express 
-Includes 
-- logger (pino) with context txnId
-- req validator 
-- common error handler
-- load configs based on env
-- feature/module wise folder structure
-- db connection
-- api call
-- streams
-- test cases for api/mocks
-- Typescript 
-- git hooks
-- dockerFile
-- cicd
+## Super Hero Service
+
+Super hero service exposing apis for data visulisation.  
+
+#### Uses
+- Express
+- Pino logger
+- Typecheck, lint and format
+- Github workflow CI scripts
+- Dockerifiles
+
+#### Database
+- Mongodb
+
+## Setup
+Requirements: Nodejs, Mongodb server
+### Setup database
+Ingest Data using `mongoimport`
+```
+curl https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/all.json
+mongoimport --db yourDatabaseName --collection yourCollectionName --file data.json --jsonArray
+```
+change the mongo config in `./config/local-dev.json`
 
 ## Quick start
 ```
